@@ -23,12 +23,12 @@ Work experience
   * Supervisor: Prof. Parinaz Naghizadeh
 
 * February 2023 - : Research Assistant
-  * UC San Diego University
+  * UC San Diego
   * Crafting an interactive RTS game that sheds light on intricate human-environment interactions, delivering high impact and maximum accessibility using machine learning algorithms on real-world data.
   * Supervisors: Prof. Parinaz Naghizadeh, Prof. Scott Swearingen, Prof. Kyoung Swearingen
 
 * August 2021 - April 2022: Research Assistant
-  * UC San Diego University
+  * Sharif University of Technology
   * Analyzed Dollar-Rial exchange rates from 2013 to 2019, employing causal analysis and stock-flow models in AnyLogic to predict future behavior. Achieved over 70% accuracy in one-year-ahead forecasts.
   * Supervisor: Prof. Shahram Shadrokh
   
@@ -46,3 +46,5 @@ Skills
 * Tableau
 * AnyLogic
 * NetLogo  
+
+[Download my full CV](https://github.com/RamanEbrahimi/ramanebrahimi.github.io/blob/master/files/cv_master.pdf)
