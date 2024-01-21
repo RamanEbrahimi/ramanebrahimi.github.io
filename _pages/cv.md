@@ -34,7 +34,6 @@ Work experience
   
 Skills
 ======
-LATEX, MATLAB, Mathematica, R, C, Python, GAMS, PowerBI, Tableau, AnyLogic, NetLogo
 
 * Python
 * LaTeX
