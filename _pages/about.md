@@ -18,4 +18,4 @@ I'm particularly jazzed about bringing theoretical models to life in real-world 
 
 But hey, life's not all about algorithms and networks. When I'm off the grid, you'll find me climbing - because why just solve economic puzzles when you can conquer boulder problems too?
 
-Thanks for dropping by my digital space! Here, I share my professional escapades, insights, and a glimpse into the thrilling realm of networks and data science.
+Thanks for dropping by my digital space! Here, I share my professional escapades, insights, and a glimpse into the thrilling realm of networks and data science. Feel free to contact me for any inquiries or to discuss potential collaborations. I'm always open to new ideas, partnerships, and projects that push the boundaries of our understanding in these exciting fields.
