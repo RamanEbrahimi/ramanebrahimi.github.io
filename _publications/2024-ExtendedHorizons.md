@@ -1,13 +1,13 @@
 ---
-title: "United We Fall: On the Nash Equilibria of Multiplex Network Games"
+title: "Extended Horizons: Multi-hop Awareness in Network Games"
 collection: publications
-permalink: /publication/2023-11-14
-excerpt: 'In this paper, we propose a model of multiplex network games to capture the different modalities of interactions among strategic agents.'
-date: 2023-11-14
-venue: '59th Allerton Conference'
-paperurl: 'https://ieeexplore.ieee.org/abstract/document/10313426'
-citation: 'R. Ebrahimi and P. Naghizadeh. (2023). "United We Fall: On the Nash Equilibria of Multiplex Network Games"; <i>2023 59th Annual Allerton Conference on Communication, Control, and Computing (Allerton)</i>. 1(1).'
+permalink: /publication/2024-10-15
+excerpt: 'We illustrate how subtle changes in a network can significantly alter equilibrium behaviors when accounting for multi-hop risk spillovers.'
+date: 2024-10-15
+venue: 'Decision and Game Theory for Security: 15th International Conference'
+paperurl: 'https://link.springer.com/chapter/10.1007/978-3-031-74835-6_10'
+citation: 'Ebrahimi, R., Naghizadeh, P. (2025). Extended Horizons: Multi-hop Awareness in Network Games. In: Sinha, A., Fu, J., Zhu, Q., Zhang, T. (eds) Decision and Game Theory for Security. GameSec 2024. Lecture Notes in Computer Science, vol 14908. Springer, Cham. https://doi.org/10.1007/978-3-031-74835-6_10'
 ---
-We first show that in general, even if the constituent networks are guaranteed to have unique Nash equilibria in isolation, the resulting multiplex need not have a unique equilibrium. We then identify certain subclasses of networks wherein guarantees on the uniqueness of Nash equilibria on the isolated networks lead to the same guarantees on the multiplex network game. We further highlight that both the largest and smallest eigenvalues of the constituent networks (reflecting their connectivity and two-sidedness, respectively) are instrumental in determining the uniqueness of the multiplex network equilibrium.
+Network/interdependent security games have been extensively used in the literature to gain insights into how firms make optimal security decisions when accounting for spillovers of risks from other firms with whom they have risk interdependencies. We extend these models by proposing K-hop network (security) games, in which agents have extended awareness of network effects: an agent in a K-hop network game accounts for not only its immediate neighbors (those with whom it directly has joint operations or shared infrastructure), but also the spillover of the (security) risks from agents up to K-hops away from it. Our findings show that extended awareness of network effects can, in general, benefit agents by allowing them to optimize their security planning and resource allocation, but that decision makers who are less sophisticated and lack this awareness can suffer, and that consequently, overall investment levels in security may deteriorate.
 
-Recommended citation: R. Ebrahimi and P. Naghizadeh. (2023). "United We Fall: On the Nash Equilibria of Multiplex Network Games"; 2023 59th Annual Allerton Conference on Communication, Control, and Computing (Allerton)
+Recommended citation: Ebrahimi, R., Naghizadeh, P. (2025). Extended Horizons: Multi-hop Awareness in Network Games. In: Sinha, A., Fu, J., Zhu, Q., Zhang, T. (eds) Decision and Game Theory for Security. GameSec 2024. Lecture Notes in Computer Science, vol 14908. Springer, Cham. https://doi.org/10.1007/978-3-031-74835-6_10
