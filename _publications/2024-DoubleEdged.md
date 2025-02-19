@@ -1,13 +1,13 @@
 ---
-title: "United We Fall: On the Nash Equilibria of Multiplex Network Games"
+title: "The double-edged sword of behavioral responses in strategic classification: Theory and user studies"
 collection: publications
-permalink: /publication/2023-11-14
-excerpt: 'In this paper, we propose a model of multiplex network games to capture the different modalities of interactions among strategic agents.'
-date: 2023-11-14
-venue: '59th Allerton Conference'
-paperurl: 'https://ieeexplore.ieee.org/abstract/document/10313426'
-citation: 'R. Ebrahimi and P. Naghizadeh. (2023). "United We Fall: On the Nash Equilibria of Multiplex Network Games"; <i>2023 59th Annual Allerton Conference on Communication, Control, and Computing (Allerton)</i>. 1(1).'
+permalink: /publication/2024-10-23
+excerpt: 'In this paper, we propose a strategic classification model that considers behavioral biases in human responses to algorithms.'
+date: 2024-10-23
+venue: 'arXiv'
+paperurl: 'https://arxiv.org/abs/2410.18066'
+citation: 'Ebrahimi, R., Vaccaro, K. and Naghizadeh, P., 2024. The double-edged sword of behavioral responses in strategic classification: Theory and user studies. arXiv preprint arXiv:2410.18066.'
 ---
-We first show that in general, even if the constituent networks are guaranteed to have unique Nash equilibria in isolation, the resulting multiplex need not have a unique equilibrium. We then identify certain subclasses of networks wherein guarantees on the uniqueness of Nash equilibria on the isolated networks lead to the same guarantees on the multiplex network game. We further highlight that both the largest and smallest eigenvalues of the constituent networks (reflecting their connectivity and two-sidedness, respectively) are instrumental in determining the uniqueness of the multiplex network equilibrium.
+We show how misperceptions of a classifier (specifically, of its feature weights) can lead to different types of discrepancies between biased and rational agents' responses, and identify when behavioral agents over- or under-invest in different features. We also show that strategic agents with behavioral biases can benefit or (perhaps, unexpectedly) harm the firm compared to fully rational strategic agents. We complement our analytical results with user studies, which support our hypothesis of behavioral biases in human responses to the algorithm. Together, our findings highlight the need to account for human (cognitive) biases when designing AI systems, and providing explanations of them, to strategic human in the loop.
 
-Recommended citation: R. Ebrahimi and P. Naghizadeh. (2023). "United We Fall: On the Nash Equilibria of Multiplex Network Games"; 2023 59th Annual Allerton Conference on Communication, Control, and Computing (Allerton)
+Recommended citation: Ebrahimi, R., Vaccaro, K. and Naghizadeh, P., 2024. The double-edged sword of behavioral responses in strategic classification: Theory and user studies. arXiv preprint arXiv:2410.18066.
