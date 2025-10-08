@@ -13,15 +13,22 @@ menu:
         # - name: Books
         #   url: books/
         #   weight: 5 
-        - name: Papers
-          url: papers/
-          weight: 2
-        - name: Courses
-          url: courses/
-          weight: 3
-        - name: Projects
-          url: data/
-          weight: 4 
+        - identifier: "papers"
+          name: "Papers"
+          url: "/papers/"
+          weight: 10
+        - identifier: "courses"
+          name: "Teaching"
+          url: "/courses/"
+          weight: 20
+        - identifier: "data"
+          name: "Data"
+          url: "/data/"
+          weight: 30
+        - identifier: "cv"
+          name: "CV"
+          url: "/cv.pdf"
+          weight: 40
         # - name: Blog
         #   url: https://en.wikipedia.org/wiki/Moritz-Maria_von_Igelfeld_(character)
         #   weight: 6
@@ -42,7 +49,7 @@ params:
     ShowBreadCrumbs: false
     ShowCodeCopyButtons: true
     ShowAllPagesInArchive: false
-    MainSections: ["books","courses","papers","data"]
+    MainSections: ["papers","courses","data"]
     ShowToc: false
     disableScrollToTop: true
     TocOpen: true
@@ -53,7 +60,7 @@ params:
     profileMode:
           enabled: true
           title: Raman Ebrahimi
-          subtitle: "Hello! This is Raman. I'm a Ph.D. student in Machine Learning and Data Science at the University of California San Diego, advised by [Dr. Massimo Franceschetti](http://web.eng.ucsd.edu/~massimo/Home.html). My research focuses on the intersection of Network Science, Game Theory, and Optimization, specifically investigating socio-technical systems through mathematical modeling and computational techniques.<br><br> My current research at UCSD involves using game-theoretic modeling and to create decision-making frameworks, particularly exploring cognitive biases in AI systems and strategic interactions within multilayer networks. I use various tools to contribute to the cutting-edge science such as user studies and surveys, mathematical modeling and optimization, network systems simulation, and game theory.<br><br> On my free time I build interactive frameworks and decision-support tools aimed at enhancing human decision-making processes and providing clear insights into complex, interconnected data scenarios. Before coming to UCSD, I earned dual Bachelor's degrees in Industrial Engineering and Physics from Sharif University of Technology in Tehran, Iran. Beyond academics, I'm passionate about algorithmic trading and financial markets, photography, and rock climbing!<br><br> Thanks for visiting my webpage!"
+          subtitle: "I am a Ph.D. student in Machine Learning and Data Science at the University of California San Diego, advised by [Dr. Massimo Franceschetti](http://web.eng.ucsd.edu/~massimo/Home.html). My research interests are in behavioral game theory, optimization, and network science.<br><br> I develop game-theoretic frameworks and AI/ML models that incorporate cognitive biases, using mathematical optimization and Python simulations. I analyze Nash equilibrium conditions in multilayer network games to derive policy insights from real-world data and design interactive strategy games to study human-environment interactions.<br><br> Currently, as a Founding Quantitative Researcher at MarketCrunch AI, I research and enhance predictive models for stocks and market indicators, and develop algorithmic trading strategies. My work involves leveraging mathematical and statistical techniques, conducting exploratory data analysis, and optimizing prediction pipelines.<br><br> My goal is to solve complex real-world problems by bridging theoretical modeling with cutting-edge computational and quantitative methods.<br><br><b>Previously:</b><br><br><ul><li><b>Data Science Intern at HCM Tradeseal (Ongoing):</b> I am currently designing a pricing and decision assistant search engine. My responsibilities include optimizing Python ETL pipelines to ensure data integrity, building data validation frameworks, and automating data quality workflows. I apply NLP and statistical modeling to enhance parsing logic for unstructured data, contributing to a searchable database of over 450,000 data points.</li><li><b>Data Analyst Intern at the American Institute for Behavioral Research and Technology (AIBRT):</b> I revived a legacy Python/SQL-based graphing application for the 'Generativity Theory' project. This involved integrating machine learning models (PyTorch, scikit-learn) for user-agnostic behavior prediction, achieving over 90% accuracy in select modes, and enhancing the models through mathematical optimization techniques.</li><li><b>Data Science Product Manager at the Scientific Association of Industrial Engineering:</b> I led a team of computer science students in the development of a real-time strategy game in Unity. My role included overseeing risk management, designing the in-game economy, performing market predictions, and running simulations to test server integrity and identify potential exploits.</li></ul>"
         
           imageUrl: "picture.jpeg"
           imageWidth: 160

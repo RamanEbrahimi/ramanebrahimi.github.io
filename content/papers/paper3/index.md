@@ -1,53 +1,29 @@
 ---
-title: "Your Inner Hedgehog" 
-date: 2021-04-06
-lastmod: 2024-10-18
-tags: ["social psychology","inner hedgehog","academia","experimental psychology","invasive thoughts"]
-author: ["Hilda Schreiber-Ziegler", "Moritz-Maria von Igelfeld"]
-description: "This paper describes the inner hedgehog, a psychological condition widespread in academia. Published in the Journal of Socio-Experimental Psychology, 2021." 
-summary: "Using several case studies, this paper describes the inner hedgehog, a psychological condition widespread in academic occupations. The condition has lasting consequences and no known cure." 
+title: "Extended Horizons: Multi-hop Awareness in Network Games"
+date: 2024-01-01
+lastmod: 2025-10-08
+tags: ["network games", "interdependent security", "strategic awareness"]
+description: "This paper proposes K-hop network (security) games, in which agents have extended awareness of network effects."
+summary: "This paper proposes K-hop network (security) games, in which agents have extended awareness of network effects."
 cover:
     image: "paper3.png"
-    alt: "Vizualisation of an inner hedgehog"
+    alt: "Extended Horizons: Multi-hop Awareness in Network Games"
     relative: false
 editPost:
-    URL: "https://github.com/pmichaillat/hugo-website"
-    Text: "Journal of Socio-Experimental Psychology"
+    URL: "https://link.springer.com/chapter/10.1007/978-3-031-74835-6_10"
+    Text: "View Paper"
 
 ---
-
----
-
-##### Download
-
-+ [Paper](paper3.pdf)
-+ [Raw data](https://github.com/pmichaillat/recession-indicator)
 
 ---
 
 ##### Abstract
 
-Using several case studies, this paper describes the inner hedgehog, a psychological condition widespread in academic occupations. The condition has lasting consequences and no known cure. Mauris tincidunt quam a libero consequat, nec pharetra nunc tristique. Pellentesque eget ipsum ut dui laoreet congue ut nec nulla. Nulla facilisi. Sed consequat, odio ac aliquet tempor, turpis augue auctor mauris, at malesuada sem dolor eget libero. Nullam iaculis malesuada risus, id fringilla quam sagittis ac. Fusce congue vel ex et facilisis. Integer volutpat eros ut urna efficitur, id efficitur sapien pharetra.
+Network/interdependent security games have been extensively used in the literature to gain insights into how firms make optimal security decisions when accounting for spillovers of risks from other firms with whom they have risk interdependencies. We extend these models by proposing K-hop network (security) games, in which agents have extended awareness of network effects: an agent in a K-hop network game accounts for not only its immediate neighbors (those with whom it directly has joint operations or shared infrastructure), but also the spillover of the (security) risks from agents up to K-hops away from it. We first establish an equivalence between our proposed K-hop network games and a one-hop game played on an appropriately defined adjacency matrix. Then, through analytical results and numerical examples, we illustrate how subtle changes in a network can significantly alter equilibrium behaviors when accounting for multi-hop risk spillovers, emphasizing the dependency of agents’ efforts on the nature of their dependencies (complement vs. substitute nature of efforts), agents’ different levels K of awareness of the network effects, and the reactive vs. passive nature of lower awareness (lower K) agents to those with higher awareness (higher K). Our findings show that extended awareness of network effects can, in general, benefit agents by allowing them to optimize their security planning and resource allocation, but that decision makers who are less sophisticated and lack this awareness can suffer, and that consequently, overall investment levels in security may deteriorate.
 
 ---
 
-##### Citation
-
-Schreiber-Ziegler, Hilda, and Moritz-Maria von Igelfeld. 2021. "Your Inner Hedgehog." *Journal of Socio-Experimental Psychology* 131 (2): 1299–1302.
-
-```BibTeX
-@article{SZI21,
-author = {Hilda Schreiber-Ziegler and Moritz-Maria von Igelfeld},
-year = {2021},
-title ={Your Inner Hedgehog},
-journal = {Journal of Socio-Experimental Psychology},
-volume = {131},
-number = {2},
-pages = {1299--1302}}
-```
+##### Figure
+![](paper3.png)
 
 ---
-
-##### Related material
-
-+ [Nontechnical summary](https://www.alexandermccallsmith.com/book/your-inner-hedgehog)
