@@ -44,3 +44,19 @@
 .button:hover {
     background: var(--lightcolor);
 }
+
+.profile_header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.profile_header_icons {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile_header_icons .social-icons {
+    justify-content: flex-start;
+}
