@@ -106,3 +106,44 @@
     color: var(--secondary);
     box-shadow: 0 1px 0 var(--primary);
 }
+
+/* List pages (papers, projects): tiles in a responsive grid instead of one full-width card per entry. */
+.entry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--gap);
+    margin-bottom: var(--gap);
+}
+
+.entry-grid .post-entry {
+    margin-bottom: 0;
+    padding: calc(var(--gap) / 1.5);
+    display: flex;
+    flex-direction: column;
+}
+
+.entry-grid .entry-cover {
+    margin-bottom: calc(var(--gap) / 1.5);
+}
+
+.entry-grid .entry-cover img {
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    object-position: top;
+}
+
+.entry-grid .entry-header h2 {
+    font-size: 16px;
+    line-height: 1.35;
+}
+
+.entry-grid .entry-content {
+    margin: 10px 0;
+    font-size: 14px;
+    -webkit-line-clamp: 4;
+}
+
+.entry-grid .entry-footer {
+    font-size: 13px;
+    margin-top: auto;
+}
