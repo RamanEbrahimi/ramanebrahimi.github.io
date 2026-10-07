@@ -24,5 +24,5 @@ Models of opinion dynamics on networks, provide a framework to study how a netwo
 
 ---
 
-##### First page
+##### Figure
 ![](opinion-manipulation-multiplex.png)

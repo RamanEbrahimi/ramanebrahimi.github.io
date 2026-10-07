@@ -24,5 +24,5 @@ Strategic classification studies how a decision maker should choose a classifier
 
 ---
 
-##### First page
+##### Figure
 ![](audit-risk.png)

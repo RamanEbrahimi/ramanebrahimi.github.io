@@ -24,5 +24,5 @@ Dashboards, feeds, and leaderboards determine whom agents believe they are playi
 
 ---
 
-##### First page
+##### Figure
 ![](visibility-design.png)

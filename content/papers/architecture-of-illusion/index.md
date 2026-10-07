@@ -24,5 +24,5 @@ Standard models of bounded rationality typically assume agents either possess ac
 
 ---
 
-##### First page
+##### Figure
 ![](architecture-of-illusion.png)

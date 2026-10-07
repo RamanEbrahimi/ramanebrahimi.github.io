@@ -24,5 +24,5 @@ Analyzing the structure and function of urban transportation networks is critica
 
 ---
 
-##### First page
+##### Figure
 ![](layers-of-a-city.png)
