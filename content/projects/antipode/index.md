@@ -6,8 +6,8 @@ tags: ["web app", "Next.js", "debate", "incentive design"]
 description: "A 1-on-1, text-only debate platform that anonymously pairs users with opposing views and rewards persuasion over winning."
 summary: "A 1-on-1, text-only debate platform that anonymously pairs users with opposing views and rewards persuasion over winning."
 editPost:
-    URL: "https://github.com/RamanEbrahimi"
-    Text: "GitHub"
+    URL: "https://antipode.chat/today"
+    Text: "Live site"
 ---
 
 ---
