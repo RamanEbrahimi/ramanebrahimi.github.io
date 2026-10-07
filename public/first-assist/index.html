@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1c2128">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="First Assist">
+<link rel="manifest" href="/first-assist/app/manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="/first-assist/app/icons/icon.svg">
+<link rel="apple-touch-icon" href="/first-assist/app/icons/apple-touch-icon.png">
+<title>First Assist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;height:100%;background:#111418;color:#e6e8eb;font:15px/1.5 Inter,system-ui,sans-serif}
+#gate{max-width:22rem;margin:18vh auto 0;padding:0 1rem}
+#gate h1{font-size:1.25rem;font-weight:600;margin:0 0 .25rem}
+#gate p{margin:0 0 1.25rem;color:#9da7b3}
+#key{width:100%;box-sizing:border-box;padding:.65rem .8rem;border:1px solid #30363d;border-radius:.6rem;background:#1c2128;color:inherit;font:inherit}
+#gate button{margin-top:.75rem;width:100%;padding:.65rem;border:0;border-radius:.6rem;background:#2f81f7;color:#fff;font:inherit;font-weight:500;cursor:pointer}
+#status{max-width:22rem;margin:.75rem auto 0;padding:0 1rem;min-height:1.5em;color:#ffb347}
+#root{position:fixed;inset:0}
+</style>
+</head>
+<body>
+<form id="gate" autocomplete="off">
+  <h1>First Assist</h1>
+  <p>Finds undocumented boulders with first-ascent potential. Paste your key to open the app.</p>
+  <input id="key" type="password" placeholder="First Assist key" autofocus>
+  <button type="submit">Open</button>
+</form>
+<p id="status" role="status"></p>
+<script type="module">
+// Shared by publish-site.mjs (Node) and the website gate page (browser; inlined there verbatim, so keep it
+// dependency-free). Format: 12-byte IV || AES-256-GCM ciphertext (tag included). Key: 32 bytes as 64 hex chars.
+function hexToBytes(hex) {
+  if (!/^[0-9a-f]{64}$/i.test(hex)) throw new Error('bundle secret must be 64 hex chars')
+  return Uint8Array.from(hex.match(/../g), (h) => parseInt(h, 16))
+}
+const importKey = (subtle, hex, usages) => subtle.importKey('raw', hexToBytes(hex), 'AES-GCM', false, usages)
+async function encrypt(subtle, hex, bytes, randomBytes = (n) => crypto.getRandomValues(new Uint8Array(n))) {
+  const iv = randomBytes(12)
+  const ct = new Uint8Array(await subtle.encrypt({ name: 'AES-GCM', iv }, await importKey(subtle, hex, ['encrypt']), bytes))
+  const out = new Uint8Array(12 + ct.length)
+  out.set(iv)
+  out.set(ct, 12)
+  return out
+}
+async function decrypt(subtle, hex, bytes) {
+  const key = await importKey(subtle, hex, ['decrypt'])
+  return new Uint8Array(await subtle.decrypt({ name: 'AES-GCM', iv: bytes.slice(0, 12) }, key, bytes.slice(12)))
+}
+
+// Gate logic for the website page (https://ramanebrahimi.github.io/first-assist/). Browser-only, no dependencies,
+// no side effects on import; publish-site.mjs inlines it (with bundle-crypto.mjs) into template.html.
+// Flow: key -> GET api/users/me -> GET api/bundle/secret -> fetch manifest + ciphertext -> decrypt + sha256 check
+// -> set window.__FA_CONFIG__ -> mount the app from object URLs. Nothing of the app exists before a key is accepted.
+
+const INVALID = "That key isn't valid."
+const OFFLINE = "First Assist is offline right now; the lab PC isn't reachable."
+const STALE = 'This build is out of date; ask Raman to republish.'
+const LOADING = 'Unlocking…'
+const KEY = 'fa.key'
+
+const hex = (buf) => Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('')
+
+function createGate(doc, { api, app, fetch, subtle, storage, setConfig, reload = () => location.reload() }) {
+  const status = (t) => { const el = doc.getElementById('status'); if (el) el.textContent = t }
+  const get = (k) => { try { return storage.getItem(k) } catch { return null } }
+  const put = (k, v) => { try { if (v == null) storage.removeItem(k); else storage.setItem(k, v) } catch { /* private mode */ } }
+
+  async function fetchBytes(url, init) {
+    const r = await fetch(url, init)
+    if (!r.ok) throw Object.assign(new Error(`HTTP ${r.status}`), { status: r.status })
+    return new Uint8Array(await r.arrayBuffer())
+  }
+
+  async function submit(key) {
+    key = (key || '').trim()
+    if (!key) return
+    status(LOADING)
+    const auth = { headers: { Authorization: `Bearer ${key}` } }
+    let me
+    try { me = await fetch(`${api}/users/me`, auth) } catch { status(OFFLINE); return }
+    if (me.status === 401 || me.status === 403) { put(KEY, null); status(INVALID); return }
+    if (!me.ok) { status(OFFLINE); return }
+    let secret, manifest, js, css
+    try {
+      secret = (await (await fetch(`${api}/bundle/secret`, auth)).json()).secret
+      manifest = await (await fetch(`${app}manifest.json`, { cache: 'no-cache' })).json()
+      ;[js, css] = await Promise.all([fetchBytes(`${app}${manifest.files.js}`), fetchBytes(`${app}${manifest.files.css}`)])
+    } catch { status(OFFLINE); return }
+    let jsPt, cssPt
+    try {
+      ;[jsPt, cssPt] = await Promise.all([decrypt(subtle, secret, js), decrypt(subtle, secret, css)])
+      if (hex(await subtle.digest('SHA-256', jsPt)) !== manifest.sha256.js || hex(await subtle.digest('SHA-256', cssPt)) !== manifest.sha256.css) throw new Error('hash')
+    } catch { status(STALE); return }
+    put(KEY, key)
+    setConfig({ apiBase: api, apiKey: key, onSignOut: () => { put(KEY, null); reload() } })
+    mount(jsPt, cssPt)
+  }
+
+  function mount(jsPt, cssPt) {
+    doc.getElementById('gate')?.remove()
+    doc.getElementById('status')?.remove()
+    const link = doc.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = URL.createObjectURL(new Blob([cssPt], { type: 'text/css' }))
+    doc.head.appendChild(link)
+    const root = doc.createElement('div')
+    root.id = 'root'
+    doc.body.appendChild(root)
+    const s = doc.createElement('script')
+    s.type = 'module'
+    s.src = URL.createObjectURL(new Blob([jsPt], { type: 'text/javascript' }))
+    doc.body.appendChild(s)
+  }
+
+  async function boot() {
+    const form = doc.getElementById('gate')
+    form?.addEventListener('submit', (e) => { e.preventDefault(); submit(doc.getElementById('key')?.value) })
+    const saved = get(KEY)
+    if (saved) await submit(saved)
+  }
+  return { submit, boot }
+}
+
+createGate(document, {
+  api: 'https://raman-ebrahimi-bizon.tail0af109.ts.net', app: '/first-assist/app/', fetch: (u, i) => window.fetch(u, i), subtle: crypto.subtle,
+  storage: window.sessionStorage, setConfig: (c) => { window.__FA_CONFIG__ = c },
+}).boot()
+</script>
+</body>
+</html>
