@@ -71,7 +71,9 @@ const KEY = 'fa.key'
 const hex = (buf) => Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('')
 
 function createGate(doc, { api, app, fetch, subtle, storage, setConfig, reload = () => location.reload() }) {
+  let busy = false
   const status = (t) => { const el = doc.getElementById('status'); if (el) el.textContent = t }
+  const lock = (on) => { for (const el of doc.querySelectorAll('#gate input, #gate button')) el.disabled = on }
   const get = (k) => { try { return storage.getItem(k) } catch { return null } }
   const put = (k, v) => { try { if (v == null) storage.removeItem(k); else storage.setItem(k, v) } catch { /* private mode */ } }
 
@@ -83,7 +85,13 @@ function createGate(doc, { api, app, fetch, subtle, storage, setConfig, reload =
 
   async function submit(key) {
     key = (key || '').trim()
-    if (!key) return
+    if (!key || busy) return // one unlock at a time: a second submit would mount the app twice
+    busy = true
+    lock(true)
+    try { await unlock(key) } finally { busy = false; lock(false) }
+  }
+
+  async function unlock(key) {
     status(LOADING)
     const auth = { headers: { Authorization: `Bearer ${key}` } }
     let me
@@ -92,9 +100,13 @@ function createGate(doc, { api, app, fetch, subtle, storage, setConfig, reload =
     if (!me.ok) { status(OFFLINE); return }
     let secret, manifest, js, css
     try {
-      secret = (await (await fetch(`${api}/bundle/secret`, auth)).json()).secret
+      const sr = await fetch(`${api}/bundle/secret`, auth)
+      secret = sr.ok ? (await sr.json()).secret : null
+      if (typeof secret !== 'string' || !/^[0-9a-f]{64}$/i.test(secret)) { status(OFFLINE); return } // server has no secret file
+      // no-cache on the ciphertext too: GitHub Pages caches for 10 min, and a fresh manifest with stale files reads as "stale"
       manifest = await (await fetch(`${app}manifest.json`, { cache: 'no-cache' })).json()
-      ;[js, css] = await Promise.all([fetchBytes(`${app}${manifest.files.js}`), fetchBytes(`${app}${manifest.files.css}`)])
+      const nc = { cache: 'no-cache' }
+      ;[js, css] = await Promise.all([fetchBytes(`${app}${manifest.files.js}`, nc), fetchBytes(`${app}${manifest.files.css}`, nc)])
     } catch { status(OFFLINE); return }
     let jsPt, cssPt
     try {
