@@ -25,6 +25,8 @@ html,body{margin:0;height:100%;background:#111418;color:#e6e8eb;font:15px/1.5 In
 #key{width:100%;box-sizing:border-box;padding:.65rem .8rem;border:1px solid #30363d;border-radius:.6rem;background:#1c2128;color:inherit;font:inherit}
 #gate button{margin-top:.75rem;width:100%;padding:.65rem;border:0;border-radius:.6rem;background:#2f81f7;color:#fff;font:inherit;font-weight:500;cursor:pointer}
 #status{max-width:22rem;margin:.75rem auto 0;padding:0 1rem;min-height:1.5em;color:#ffb347}
+#status.note{position:fixed;left:0;right:0;bottom:0;z-index:1000;max-width:none;margin:0;padding:.4rem 1rem;background:#1c2128;font-size:.85rem;cursor:pointer}
+#gate label{display:flex;gap:.5rem;align-items:center;margin-top:.75rem;color:#9da7b3;font-size:.9rem}
 #root{position:fixed;inset:0}
 </style>
 </head>
@@ -33,6 +35,7 @@ html,body{margin:0;height:100%;background:#111418;color:#e6e8eb;font:15px/1.5 In
   <h1>First Assist</h1>
   <p>Finds undocumented boulders with first-ascent potential. Paste your key to open the app.</p>
   <input id="key" type="password" placeholder="First Assist key" autofocus>
+  <label><input id="remember" type="checkbox"> Keep me signed in on this phone</label>
   <button type="submit">Open</button>
 </form>
 <p id="status" role="status"></p>
@@ -66,16 +69,24 @@ const INVALID = "That key isn't valid."
 const OFFLINE = "First Assist is offline right now; the lab PC isn't reachable."
 const STALE = 'This build is out of date; ask Raman to republish.'
 const LOADING = 'Unlocking…'
-const KEY = 'fa.key'
+const SAVED = 'Offline: using the saved copy'
+const KEY = 'fa.key', SECRET = 'fa.bundleSecret'
 
 const hex = (buf) => Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('')
 
-function createGate(doc, { api, app, fetch, subtle, storage, setConfig, reload = () => location.reload() }) {
+// storage: per-tab (sessionStorage). persistent: only written when "Keep me signed in on this phone" is on (localStorage).
+function createGate(doc, { api, app, fetch, subtle, storage, persistent = globalThis.localStorage, caches = globalThis.caches, setConfig, reload = () => location.reload() }) {
   let busy = false
   const status = (t) => { const el = doc.getElementById('status'); if (el) el.textContent = t }
   const lock = (on) => { for (const el of doc.querySelectorAll('#gate input, #gate button')) el.disabled = on }
-  const get = (k) => { try { return storage.getItem(k) } catch { return null } }
-  const put = (k, v) => { try { if (v == null) storage.removeItem(k); else storage.setItem(k, v) } catch { /* private mode */ } }
+  const get = (k, st = storage) => { try { return st?.getItem(k) ?? null } catch { return null } }
+  const put = (k, v, st = storage) => { try { if (v == null) st?.removeItem(k); else st?.setItem(k, v) } catch { /* private mode */ } }
+  const remember = () => !!doc.getElementById('remember')?.checked
+  const forget = () => {
+    put(KEY, null); put(KEY, null, persistent); put(SECRET, null, persistent)
+    // saved trip data and tiles go too (the worker never caches /bundle/ or /users/, but sign-out clears what it did save)
+    try { if (caches) { caches.delete('fa-api').catch(() => {}); caches.delete('fa-tiles').catch(() => {}) } } catch { /* no Cache Storage */ }
+  }
 
   async function fetchBytes(url, init) {
     const r = await fetch(url, init)
@@ -95,8 +106,8 @@ function createGate(doc, { api, app, fetch, subtle, storage, setConfig, reload =
     status(LOADING)
     const auth = { headers: { Authorization: `Bearer ${key}` } }
     let me
-    try { me = await fetch(`${api}/users/me`, auth) } catch { status(OFFLINE); return }
-    if (me.status === 401 || me.status === 403) { put(KEY, null); status(INVALID); return }
+    try { me = await fetch(`${api}/users/me`, auth) } catch { await offlineUnlock(key); return }
+    if (me.status === 401 || me.status === 403) { forget(); status(INVALID); return }
     if (!me.ok) { status(OFFLINE); return }
     let secret, manifest, js, css
     try {
@@ -104,23 +115,52 @@ function createGate(doc, { api, app, fetch, subtle, storage, setConfig, reload =
       secret = sr.ok ? (await sr.json()).secret : null
       if (typeof secret !== 'string' || !/^[0-9a-f]{64}$/i.test(secret)) { status(OFFLINE); return } // server has no secret file
       // no-cache on the ciphertext too: GitHub Pages caches for 10 min, and a fresh manifest with stale files reads as "stale"
-      manifest = await (await fetch(`${app}manifest.json`, { cache: 'no-cache' })).json()
-      const nc = { cache: 'no-cache' }
-      ;[js, css] = await Promise.all([fetchBytes(`${app}${manifest.files.js}`, nc), fetchBytes(`${app}${manifest.files.css}`, nc)])
+      ;({ manifest, js, css } = await fetchBundle('no-cache'))
     } catch { status(OFFLINE); return }
-    let jsPt, cssPt
-    try {
-      ;[jsPt, cssPt] = await Promise.all([decrypt(subtle, secret, js), decrypt(subtle, secret, css)])
-      if (hex(await subtle.digest('SHA-256', jsPt)) !== manifest.sha256.js || hex(await subtle.digest('SHA-256', cssPt)) !== manifest.sha256.css) throw new Error('hash')
-    } catch { status(STALE); return }
+    const pt = await decryptBundle(secret, manifest, js, css)
+    if (!pt) { status(STALE); return }
     put(KEY, key)
-    setConfig({ apiBase: api, apiKey: key, onSignOut: () => { put(KEY, null); reload() } })
-    mount(jsPt, cssPt)
+    if (remember()) { put(KEY, key, persistent); put(SECRET, secret, persistent) } else { put(KEY, null, persistent); put(SECRET, null, persistent) }
+    start(key, pt)
   }
 
-  function mount(jsPt, cssPt) {
+  // The PC is unreachable: only with an opted-in saved key + secret, decrypt the copy the service worker cached.
+  async function offlineUnlock(key) {
+    const secret = get(SECRET, persistent)
+    if (!secret || get(KEY, persistent) !== key) { status(OFFLINE); return }
+    let b
+    try { b = await fetchBundle('default') } catch { status(OFFLINE); return }
+    const pt = await decryptBundle(secret, b.manifest, b.js, b.css)
+    if (!pt) { status(OFFLINE); return }
+    put(KEY, key)
+    start(key, pt, SAVED)
+  }
+
+  async function fetchBundle(cache) {
+    const init = { cache }
+    const manifest = await (await fetch(`${app}manifest.json`, init)).json()
+    const [js, css] = await Promise.all([fetchBytes(`${app}${manifest.files.js}`, init), fetchBytes(`${app}${manifest.files.css}`, init)])
+    return { manifest, js, css }
+  }
+
+  /** Decrypt + sha256 check; null when the secret doesn't fit this build. */
+  async function decryptBundle(secret, manifest, js, css) {
+    try {
+      const [jsPt, cssPt] = await Promise.all([decrypt(subtle, secret, js), decrypt(subtle, secret, css)])
+      if (hex(await subtle.digest('SHA-256', jsPt)) !== manifest.sha256.js || hex(await subtle.digest('SHA-256', cssPt)) !== manifest.sha256.css) return null
+      return { jsPt, cssPt }
+    } catch { return null }
+  }
+
+  function start(key, { jsPt, cssPt }, note) {
+    setConfig({ apiBase: api, apiKey: key, onSignOut: () => { forget(); reload() } })
+    mount(jsPt, cssPt, note)
+  }
+
+  function mount(jsPt, cssPt, note) {
     doc.getElementById('gate')?.remove()
-    doc.getElementById('status')?.remove()
+    const st = doc.getElementById('status')
+    if (note && st) { st.textContent = note; st.className = 'note'; st.onclick = () => st.remove() } else st?.remove()
     const link = doc.createElement('link')
     link.rel = 'stylesheet'
     link.href = URL.createObjectURL(new Blob([cssPt], { type: 'text/css' }))
@@ -137,15 +177,26 @@ function createGate(doc, { api, app, fetch, subtle, storage, setConfig, reload =
   async function boot() {
     const form = doc.getElementById('gate')
     form?.addEventListener('submit', (e) => { e.preventDefault(); submit(doc.getElementById('key')?.value) })
-    const saved = get(KEY)
+    const kept = get(KEY, persistent)
+    const box = doc.getElementById('remember')
+    if (kept && box) box.checked = true
+    const saved = get(KEY) || kept
     if (saved) await submit(saved)
   }
   return { submit, boot }
 }
 
+if ('serviceWorker' in navigator && window.isSecureContext) {
+  // cache the API (?api=) and this page, manifest.json and the .enc files (?static=) for offline unlock
+  const scope = new URL('./', location.href).href
+  const sw = new URL('./sw.js', location.href)
+  sw.searchParams.set('api', new URL('https://raman-ebrahimi-bizon.tail0af109.ts.net').origin)
+  sw.searchParams.set('static', scope)
+  navigator.serviceWorker.register(sw.href, { scope: './' }).catch(() => { /* no offline copy, online works as before */ })
+}
 createGate(document, {
   api: 'https://raman-ebrahimi-bizon.tail0af109.ts.net', app: '/first-assist/app/', fetch: (u, i) => window.fetch(u, i), subtle: crypto.subtle,
-  storage: window.sessionStorage, setConfig: (c) => { window.__FA_CONFIG__ = c },
+  storage: window.sessionStorage, persistent: window.localStorage, setConfig: (c) => { window.__FA_CONFIG__ = c },
 }).boot()
 </script>
 </body>
