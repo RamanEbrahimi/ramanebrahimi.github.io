@@ -1,12 +1,12 @@
 {
-  "version": "c249c9f",
-  "built": "2026-10-20T21:10:26.511Z",
+  "version": "af2b75b",
+  "built": "2026-10-20T21:33:02.570Z",
   "files": {
     "js": "app.js.enc",
     "css": "app.css.enc"
   },
   "sha256": {
-    "js": "fa7773fd43e1be6c8522b60a31ec469af3f6982c64adf2e981d1cbb5fade8dd5",
-    "css": "acac07f4aa4039579543865bf1cf2a11f56912097834d6bc28130d5291d9b2f3"
+    "js": "a4bd8a8cc1cf9bd5820125cc892a284dd363ab158a111a34157d4095c74ba082",
+    "css": "0539afb6f929f7008e1992cee6848681fba72b0dfb87e8749c0616660fcb7864"
   }
 }
